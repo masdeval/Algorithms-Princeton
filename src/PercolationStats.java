@@ -98,9 +98,9 @@ public class PercolationStats {
     public static void main(String[] args) {
 
         int n = Integer.parseInt(args[0]);
-        int T = Integer.parseInt(args[1]);
+        int t = Integer.parseInt(args[1]);
 
-        PercolationStats stats = new PercolationStats(n, T);
+        PercolationStats stats = new PercolationStats(n, t);
         System.out.println("mean:              " + stats.mean());
         System.out.println("stddev:            " + stats.stddev());
         // 95% confidence interval = 0.5912745987737567, 0.5947124012262428

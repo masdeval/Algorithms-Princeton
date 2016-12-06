@@ -12,13 +12,13 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
+    private static final int BOTTOM_VIRTUAL = -1;
+    private static final int TOP_VIRTUAL = -2;
     private byte[][] grid;
     private int size;
     private WeightedQuickUnionUF quf;
     private int topVirtual;
     private int bottomVirtual;
-    private final static int BOTTOM_VIRTUAL = -1;
-    private final static int TOP_VIRTUAL = -2;
 
     public Percolation(int n) // create n-by-n grid, with all sites blocked
     {
@@ -31,25 +31,6 @@ public class Percolation {
         grid = new byte[n][n];
         topVirtual = (size * size);
         bottomVirtual = (size * size) + 1;
-
-    }
-
-    private void connectVirtualSites() {
-        //connect top
-        for (int i = 0; i < size; i++) {
-
-            if(grid[0][i] == 1)
-                quf.union(topVirtual, i);
-
-        }
-
-        //connect botton
-        for (int i = 0; i < size; i++) {
-
-            if(grid[size - 1][i] == 1)
-                quf.union(bottomVirtual, size * (size - 1) + i);
-
-        }
 
     }
 
@@ -87,6 +68,13 @@ public class Percolation {
                 quf.union(size * trueRow + trueCol, size * (trueRow + 1) + trueCol);
             }
 
+            // now, verify if the site is top or bottom and connect to respective virtual             
+            if (trueRow == 0) // if top
+                quf.union(topVirtual, trueCol);
+            if (row == size) // if bottom            
+                quf.union(bottomVirtual, size * trueRow + trueCol);
+            
+
         }
 
     }
@@ -107,22 +95,22 @@ public class Percolation {
             throw new IndexOutOfBoundsException();
         }
 
-        if ((row == BOTTOM_VIRTUAL) && (col == TOP_VIRTUAL)) 
-            return quf.connected(bottomVirtual,topVirtual);        
+        if ((row == BOTTOM_VIRTUAL) && (col == TOP_VIRTUAL)) {
+            return quf.connected(bottomVirtual, topVirtual);
+        }
 
         int trueRow = row - 1;
         int trueCol = col - 1;
 
-        if (isOpen(row, col))
+        if (isOpen(row, col)) {
             return quf.connected((size * trueRow + trueCol), topVirtual);
-                    
-        
+        }
+
         return false;
     }
 
     public boolean percolates() // does the system percolate?
     {
-        connectVirtualSites();
         return (isFull(BOTTOM_VIRTUAL, TOP_VIRTUAL));
 
     }

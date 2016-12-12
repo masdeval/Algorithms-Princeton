@@ -16,7 +16,7 @@ import java.io.IOException;
  *
  * @author christian
  */
-public class AlgorithmsPrinceton {
+public class PercolationClient {
 
     /**
      * @param args the command line arguments

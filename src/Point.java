@@ -70,7 +70,7 @@ public class Point implements Comparable<Point> {
             return Double.NEGATIVE_INFINITY;
         
         
-        double aux = (double) ((that.y - this.y) / (that.x - this.x));       
+        double aux = (double) ((double)(that.y - this.y) / (double)(that.x - this.x));       
 
         return aux; 
     }
@@ -144,4 +144,16 @@ public class Point implements Comparable<Point> {
     public static void main(String[] args) {
         /* YOUR CODE HERE */
     }
+    
+    public double distance(Point a)
+ {
+    double x = (double) this.x - a.x;
+    double y = (double) this.y - a.y;
+  
+    x = x * x;
+    y = y * y;
+
+    return Math.sqrt(x+y);
+   
+ }
 }

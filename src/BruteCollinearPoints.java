@@ -10,21 +10,20 @@ public class BruteCollinearPoints {
             throw new NullPointerException();
         }
 
-        if (points.length < 4) {
-            return;
-        }
 
         // not allowed repeted points
         for (int i = 0; i < points.length; i++) {
-            for (int j = i + 1; j < points.length; j++) {
-                if (points[i] == points[j]) {
+            if (points[i] == null)
+                throw new NullPointerException();
+            for (int j = i + 1; j < points.length; j++) {                
+                if (points[i].compareTo(points[j]) == 0) {
                     throw new IllegalArgumentException();
                 }
             }
         }
-        this.lines = new LineSegment[points.length / 4];
-        Point[] alreadyChosenHead = new Point[points.length / 4];
-        Point[] alreadyChosenTail = new Point[points.length / 4];
+        this.lines = new LineSegment[points.length / 4 +1];
+        Point[] alreadyChosenHead = new Point[points.length / 4 + 1];
+        Point[] alreadyChosenTail = new Point[points.length / 4 + 1];
         for (int i = 0; i <= points.length - 4; i++) {
             for (int j = i + 1; j < points.length; j++) {
 
@@ -75,11 +74,22 @@ public class BruteCollinearPoints {
                                 boolean insert = true;
                                 for (int z = 0; z < numberOfSegments; z++) {
                                                                        
-                                    if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z]) ||
+                                    Double x = new Double(head.slopeTo(alreadyChosenTail[z]));
+                                    Double y = new Double(tail.slopeTo(alreadyChosenHead[z]));
+                                    Double w = new Double(head.slopeTo(alreadyChosenHead[z]));
+                                    Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
+                                    
+                                    if (x.compareTo(y) == 0 || w.compareTo(h) == 0)
+                                    {
+                                        insert = false;
+                                        break;
+                                        
+                                    }
+                                    /*if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z]) ||
                                         head.slopeTo(alreadyChosenHead[z]) == tail.slopeTo(alreadyChosenTail[z])) {
                                         insert = false;
                                         break;
-                                    }
+                                    }*/
                                 }
                                 if (insert) {
                                     alreadyChosenHead[numberOfSegments] = head;

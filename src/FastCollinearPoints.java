@@ -14,21 +14,19 @@ public class FastCollinearPoints {
             throw new NullPointerException();
         }
 
-        if (points.length < 4) {
-            return;
-        }
-
         // not allowed repeted points
         for (int i = 0; i < points.length; i++) {
+            if (points[i] == null)
+                throw new NullPointerException();
             for (int j = i + 1; j < points.length; j++) {
-                if (points[i] == points[j]) {
+                if (points[i].compareTo(points[j]) == 0) {
                     throw new IllegalArgumentException();
                 }
             }
         }
-        this.lines = new LineSegment[points.length / 4];
-        Point[] alreadyChosenHead = new Point[points.length / 4];
-        Point[] alreadyChosenTail = new Point[points.length / 4];
+        this.lines = new LineSegment[points.length / 4 +1];
+        Point[] alreadyChosenHead = new Point[points.length / 4 +1];
+        Point[] alreadyChosenTail = new Point[points.length / 4 +1];
 
         for (int i = 0; i <= points.length - 4; i++) {
 

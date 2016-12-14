@@ -16,9 +16,11 @@ public class CollinearPointsClient {
 
     public static void main(String[] args) {
 
+        
+               
         // read the n points from a file
         //In in = new In(args[0]);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/collinear/input200.txt");
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/collinear/input80.txt");
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {

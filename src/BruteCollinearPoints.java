@@ -1,8 +1,8 @@
 
 public class BruteCollinearPoints {
 
-    LineSegment[] lines;
-    int numberOfSegments = 0;
+    private LineSegment[] lines;
+    private int numberOfSegments = 0;
 
     public BruteCollinearPoints(Point[] points) // finds all line segments containing 4 points
     {
@@ -22,38 +22,49 @@ public class BruteCollinearPoints {
                 }
             }
         }
-        this.lines = new LineSegment[points.length/2];
-        Point[] alreadyChosenHead = new Point[points.length/2];
-        Point[] alreadyChosenTail = new Point[points.length/2];
+        this.lines = new LineSegment[points.length / 4];
+        Point[] alreadyChosenHead = new Point[points.length / 4];
+        Point[] alreadyChosenTail = new Point[points.length / 4];
         for (int i = 0; i <= points.length - 4; i++) {
             for (int j = i + 1; j < points.length; j++) {
+
+                int count = 2;
+                Point head;
+                Point tail;
+
                 for (int m = j + 1; m < points.length; m++) {
-                    int count = 2;
-                    Point head = points[i];
-                    Point tail = points[j];
+                    
+                    if (points[i].compareTo(points[j]) > 0) {
+                        head = points[i];
+                        tail = points[j];
+                    } else {
+                        head = points[j];
+                        tail = points[i];
+                    }
+
                     if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[m])) {
-                        count++;
-                        if (tail.distance(points[m]) > head.distance(tail)) {
-                            head = points[m];
-                        }
-                        if (head.distance(points[m]) > head.distance(tail)) {
+                        count = 3;
+                        if (points[m].compareTo(tail) < 0) {
                             tail = points[m];
+                        }
+                        if (points[m].compareTo(head) > 0) {
+                            head = points[m];
                         }
                         // search for the fourth point
                         for (int k = m + 1; k < points.length; k++) {
 
                             if (points[k].slopeTo(head) == points[k].slopeTo(tail)) {
                                 count++;
-                                if (tail.distance(points[k]) > head.distance(tail)) {
-                                    head = points[k];
-                                }
-                                if (head.distance(points[k]) > head.distance(tail)) {
+                                if (points[k].compareTo(tail) < 0) {
                                     tail = points[k];
+                                }
+                                if (points[k].compareTo(head) > 0) {
+                                    head = points[k];
                                 }
                             }
                         }
                         if (count >= 4) {
-                            
+
                             if (numberOfSegments == 0) {
                                 alreadyChosenHead[numberOfSegments] = head;
                                 alreadyChosenTail[numberOfSegments] = tail;
@@ -63,17 +74,12 @@ public class BruteCollinearPoints {
                             } else {
                                 boolean insert = true;
                                 for (int z = 0; z < numberOfSegments; z++) {
-                                    if (head.slopeTo(alreadyChosenHead[z]) == head.slopeTo(alreadyChosenTail[z])) {//&& head.distance(tail) < alreadyChosenHead[z].distance(alreadyChosenTail[z])) {
+                                                                       
+                                    if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z]) ||
+                                        head.slopeTo(alreadyChosenHead[z]) == tail.slopeTo(alreadyChosenTail[z])) {
                                         insert = false;
                                         break;
-                                    }/* else if (head.slopeTo(alreadyChosenHead[z]) == head.slopeTo(alreadyChosenTail[z])
-                                            && head.distance(tail) > alreadyChosenHead[z].distance(alreadyChosenTail[z])) {
-                                        alreadyChosenHead[z] = head;
-                                        alreadyChosenTail[z] = tail;
-                                        lines[z] = new LineSegment(head, tail);
                                     }
-                                    else{*/
-                                    //}
                                 }
                                 if (insert) {
                                     alreadyChosenHead[numberOfSegments] = head;
@@ -87,7 +93,7 @@ public class BruteCollinearPoints {
 
                     }
 
-                }
+                }// end search third and fourth point
 
             }
         }

@@ -70,7 +70,7 @@ public class Point implements Comparable<Point> {
             return Double.NEGATIVE_INFINITY;
         
         
-        double aux = (double) ((double)(that.y - this.y) / (double)(that.x - this.x));       
+        double aux = (double) ((that.y - this.y) / (that.x - this.x));       
 
         return aux; 
     }
@@ -111,16 +111,28 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
         
-        return new slopeOrderComparator();
+        return new SlopeOrder(this);
         
     }
 
 
-    private class slopeOrderComparator implements Comparator<Point>{
+    private class SlopeOrder implements Comparator<Point>{
     
+      private Point orign;
+      
+      SlopeOrder(Point p){
+          this.orign = p;
+      }
+      
       public int compare(Point p1, Point p2){
-          
-        return 0;
+        
+          if (p1.slopeTo(orign) > p2.slopeTo(orign))
+              return 1;
+          else if (p1.slopeTo(orign) < p2.slopeTo(orign))
+              return -1;
+          else 
+              return 0;         
+        
       }
     
     }
@@ -145,7 +157,7 @@ public class Point implements Comparable<Point> {
         /* YOUR CODE HERE */
     }
     
-    public double distance(Point a)
+ /*   public double distance(Point a)
  {
     double x = (double) this.x - a.x;
     double y = (double) this.y - a.y;
@@ -155,5 +167,5 @@ public class Point implements Comparable<Point> {
 
     return Math.sqrt(x+y);
    
- }
+ }  */
 }

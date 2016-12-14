@@ -1,8 +1,10 @@
 
 public class BruteCollinearPoints {
 
-    private LineSegment[] lines;
+    private LineSegment[] lines;    
     private int numberOfSegments = 0;
+    private Point[] alreadyChosenHead;
+    private Point[] alreadyChosenTail;
 
     public BruteCollinearPoints(Point[] points) // finds all line segments containing 4 points
     {
@@ -10,20 +12,17 @@ public class BruteCollinearPoints {
             throw new NullPointerException();
         }
 
-
         // not allowed repeted points
         for (int i = 0; i < points.length; i++) {
-            if (points[i] == null)
+            if (points[i] == null) {
                 throw new NullPointerException();
-            for (int j = i + 1; j < points.length; j++) {                
+            }
+            for (int j = i + 1; j < points.length; j++) {
                 if (points[i].compareTo(points[j]) == 0) {
                     throw new IllegalArgumentException();
                 }
             }
         }
-        this.lines = new LineSegment[points.length / 4 +1];
-        Point[] alreadyChosenHead = new Point[points.length / 4 + 1];
-        Point[] alreadyChosenTail = new Point[points.length / 4 + 1];
         for (int i = 0; i <= points.length - 4; i++) {
             for (int j = i + 1; j < points.length; j++) {
 
@@ -32,7 +31,7 @@ public class BruteCollinearPoints {
                 Point tail;
 
                 for (int m = j + 1; m < points.length; m++) {
-                    
+
                     if (points[i].compareTo(points[j]) > 0) {
                         head = points[i];
                         tail = points[j];
@@ -64,41 +63,35 @@ public class BruteCollinearPoints {
                         }
                         if (count >= 4) {
 
-                            if (numberOfSegments == 0) {
+                            boolean insert = true;
+                            for (int z = 0; z < numberOfSegments; z++) {
+
+                                Double x = new Double(head.slopeTo(alreadyChosenTail[z]));
+                                Double y = new Double(tail.slopeTo(alreadyChosenHead[z]));
+                                Double w = new Double(head.slopeTo(alreadyChosenHead[z]));
+                                Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
+
+                                if (/*x.compareTo(y) == 0 ||*/ (w.compareTo(h) == 0 && ((head.compareTo(alreadyChosenHead[z])) == 0) &&
+                                       (tail.compareTo(alreadyChosenTail[z])) == 0)  ) {
+                                    insert = false;
+                                    break;
+
+                                }
+                                /*if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z]) ||
+                                        head.slopeTo(alreadyChosenHead[z]) == tail.slopeTo(alreadyChosenTail[z])) {
+                                        insert = false;
+                                        break;
+                                    }*/
+                            }
+                            if (insert) {
+                                redimensionaVetores();
                                 alreadyChosenHead[numberOfSegments] = head;
                                 alreadyChosenTail[numberOfSegments] = tail;
                                 lines[numberOfSegments] = new LineSegment(head, tail);
                                 numberOfSegments++;
 
-                            } else {
-                                boolean insert = true;
-                                for (int z = 0; z < numberOfSegments; z++) {
-                                                                       
-                                    Double x = new Double(head.slopeTo(alreadyChosenTail[z]));
-                                    Double y = new Double(tail.slopeTo(alreadyChosenHead[z]));
-                                    Double w = new Double(head.slopeTo(alreadyChosenHead[z]));
-                                    Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
-                                    
-                                    if (x.compareTo(y) == 0 || w.compareTo(h) == 0)
-                                    {
-                                        insert = false;
-                                        break;
-                                        
-                                    }
-                                    /*if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z]) ||
-                                        head.slopeTo(alreadyChosenHead[z]) == tail.slopeTo(alreadyChosenTail[z])) {
-                                        insert = false;
-                                        break;
-                                    }*/
-                                }
-                                if (insert) {
-                                    alreadyChosenHead[numberOfSegments] = head;
-                                    alreadyChosenTail[numberOfSegments] = tail;
-                                    lines[numberOfSegments] = new LineSegment(head, tail);
-                                    numberOfSegments++;
-                                }
-
                             }
+
                         }
 
                     }
@@ -116,12 +109,30 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() // the line segments
-    {
-        LineSegment[] aux = new LineSegment[numberOfSegments];
-        for (int i = 0; i < numberOfSegments; i++) {
-            aux[i] = lines[i];
-        }
-        return aux;
+    {        
+        return lines;
     }
 
+    private void redimensionaVetores() {
+
+        if (numberOfSegments == 0) {
+            lines = new LineSegment[1];
+            alreadyChosenHead = new Point[1];
+            alreadyChosenTail = new Point[1];
+        } else {
+            LineSegment[] linesAux = new LineSegment[lines.length + 1];
+            Point[] alreadyChosenHeadAux = new Point[alreadyChosenHead.length + 1];
+            Point[] alreadyChosenTailAux = new Point[alreadyChosenTail.length + 1];
+
+            for (int i = 0; i < lines.length; i++) {
+                linesAux[i] = lines[i];
+                alreadyChosenHeadAux[i] = alreadyChosenHead[i];
+                alreadyChosenTailAux[i] = alreadyChosenTail[i];
+            }
+
+            lines = linesAux;
+            alreadyChosenHead = alreadyChosenHeadAux;
+            alreadyChosenTail = alreadyChosenTailAux;
+        }
+    }
 }

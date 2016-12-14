@@ -18,7 +18,7 @@ public class CollinearPointsClient {
 
         // read the n points from a file
         //In in = new In(args[0]);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/collinear/input8.txt");
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/collinear/input200.txt");
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
@@ -37,8 +37,8 @@ public class CollinearPointsClient {
         StdDraw.show();
 
         // print and draw the line segments
-        //BruteCollinearPoints collinear = new BruteCollinearPoints(points);
-        FastCollinearPoints collinear = new FastCollinearPoints(points);
+        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+        //FastCollinearPoints collinear = new FastCollinearPoints(points);
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
             segment.draw();

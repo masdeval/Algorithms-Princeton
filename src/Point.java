@@ -70,7 +70,7 @@ public class Point implements Comparable<Point> {
             return Double.NEGATIVE_INFINITY;
         
         
-        double aux = (double) ((that.y - this.y) / (that.x - this.x));       
+        double aux = (double) ((double)(that.y - this.y) / (that.x - this.x));       
 
         return aux; 
     }
@@ -126,13 +126,8 @@ public class Point implements Comparable<Point> {
       
       public int compare(Point p1, Point p2){
         
-          if (p1.slopeTo(orign) > p2.slopeTo(orign))
-              return 1;
-          else if (p1.slopeTo(orign) < p2.slopeTo(orign))
-              return -1;
-          else 
-              return 0;         
-        
+          return ((Double)p1.slopeTo(orign)).compareTo(p2.slopeTo(orign));
+          
       }
     
     }

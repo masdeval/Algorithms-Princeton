@@ -3,7 +3,7 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
 
-     private LineSegment[] lines;    
+    private LineSegment[] lines;
     private int numberOfSegments = 0;
     private Point[] alreadyChosenHead;
     private Point[] alreadyChosenTail;
@@ -67,35 +67,39 @@ public class FastCollinearPoints {
                 }
                 if (count >= 4) {
 
-                        boolean insert = true;
-                        for (int z = 0; z < numberOfSegments; z++) {
+                    boolean insert = true;
+                    for (int z = 0; z < numberOfSegments; z++) {
 
-                            Double x = new Double(head.slopeTo(alreadyChosenTail[z]));
-                            Double y = new Double(tail.slopeTo(alreadyChosenHead[z]));
-                            Double w = new Double(head.slopeTo(alreadyChosenHead[z]));
-                            Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
+                        Double x = new Double(head.slopeTo(alreadyChosenTail[z]));
+                        Double y = new Double(tail.slopeTo(alreadyChosenHead[z]));
+                        Double w = new Double(head.slopeTo(alreadyChosenHead[z]));
+                        Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
 
-                            if (x.compareTo(y) == 0 || w.compareTo(h) == 0) {
-                                insert = false;
-                                break;
+                        // doesn't insert a segment with the same slope of other - very restrective 
+                        if (x.compareTo(y) == 0 || w.compareTo(h) == 0) {
+                            insert = false;
+                            break;
 
-                            }
-
-                            /* if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z])
-                                    || head.slopeTo(alreadyChosenHead[z]) == tail.slopeTo(alreadyChosenTail[z])) {
-                                insert = false;
-                                break;
-                            }*/
-                        }
-                        if (insert) {
-                            redimensionaVetores();
-                            alreadyChosenHead[numberOfSegments] = head;
-                            alreadyChosenTail[numberOfSegments] = tail;
-                            lines[numberOfSegments] = new LineSegment(head, tail);
-                            numberOfSegments++;
                         }
 
-                    
+                       /*
+                        // discard a segment only if it has the same slope of other already chosen and both have the same head and tail 
+                        if ((w.compareTo(h) == 0 && ((head.compareTo(alreadyChosenHead[z])) == 0)
+                                && (tail.compareTo(alreadyChosenTail[z])) == 0)) {
+                            insert = false;
+                            break;
+
+                        }
+                        */
+                    }
+                    if (insert) {
+                        redimensionaVetores();
+                        alreadyChosenHead[numberOfSegments] = head;
+                        alreadyChosenTail[numberOfSegments] = tail;
+                        lines[numberOfSegments] = new LineSegment(head, tail);
+                        numberOfSegments++;
+                    }
+
                 }
                 if (j == aux.length - 1) {
                     j--;
@@ -124,10 +128,10 @@ public class FastCollinearPoints {
 
     public LineSegment[] segments() // the line segments
     {
-        return lines;
+        return lines.clone(); // defensive copy
     }
 
-     private void redimensionaVetores() {
+    private void redimensionaVetores() {
 
         if (numberOfSegments == 0) {
             lines = new LineSegment[1];

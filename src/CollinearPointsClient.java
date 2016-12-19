@@ -33,10 +33,10 @@ public class CollinearPointsClient {
         StdDraw.enableDoubleBuffering();
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
-        for (Point p : points) {
+        /*for (Point p : points) {
             p.draw();
         }
-        StdDraw.show();
+        StdDraw.show();*/
 
         // print and draw the line segments
         //BruteCollinearPoints collinear = new BruteCollinearPoints(points);

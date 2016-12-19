@@ -1,7 +1,7 @@
 
 public class BruteCollinearPoints {
 
-    private LineSegment[] lines;    
+    private LineSegment[] lines;
     private int numberOfSegments = 0;
     private Point[] alreadyChosenHead;
     private Point[] alreadyChosenTail;
@@ -30,15 +30,15 @@ public class BruteCollinearPoints {
                 Point head;
                 Point tail;
 
-                for (int m = j + 1; m < points.length; m++) {
+                if (points[i].compareTo(points[j]) > 0) {
+                    head = points[i];
+                    tail = points[j];
+                } else {
+                    head = points[j];
+                    tail = points[i];
+                }
 
-                    if (points[i].compareTo(points[j]) > 0) {
-                        head = points[i];
-                        tail = points[j];
-                    } else {
-                        head = points[j];
-                        tail = points[i];
-                    }
+                for (int m = j + 1; m < points.length; m++) {
 
                     if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[m])) {
                         count = 3;
@@ -71,17 +71,21 @@ public class BruteCollinearPoints {
                                 Double w = new Double(head.slopeTo(alreadyChosenHead[z]));
                                 Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
 
-                                if (/*x.compareTo(y) == 0 ||*/ (w.compareTo(h) == 0 && ((head.compareTo(alreadyChosenHead[z])) == 0) &&
-                                       (tail.compareTo(alreadyChosenTail[z])) == 0)  ) {
+                                // doesn't insert a segment with the same slope of other - very restrective 
+                                if (x.compareTo(y) == 0 || w.compareTo(h) == 0) {
                                     insert = false;
                                     break;
 
                                 }
-                                /*if (head.slopeTo(alreadyChosenTail[z]) == tail.slopeTo(alreadyChosenHead[z]) ||
-                                        head.slopeTo(alreadyChosenHead[z]) == tail.slopeTo(alreadyChosenTail[z])) {
-                                        insert = false;
-                                        break;
-                                    }*/
+
+                                /*
+                                // discard a segment only if it has the same slope of other already chosen and both have the same head and tail 
+                                if ((w.compareTo(h) == 0 && ((head.compareTo(alreadyChosenHead[z])) == 0)
+                                        && (tail.compareTo(alreadyChosenTail[z])) == 0)) {
+                                    insert = false;
+                                    break;
+
+                                }*/
                             }
                             if (insert) {
                                 redimensionaVetores();
@@ -109,8 +113,8 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() // the line segments
-    {        
-        return lines;
+    {
+        return lines.clone(); // defensive copy
     }
 
     private void redimensionaVetores() {

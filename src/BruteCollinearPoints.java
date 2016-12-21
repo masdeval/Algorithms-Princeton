@@ -23,7 +23,7 @@ public class BruteCollinearPoints {
                 }
             }
         }
-        for (int i = 0; i <= points.length - 4; i++) {
+        for (int i = 0; i <= points.length-4; i++) {
             for (int j = i + 1; j < points.length; j++) {
 
                 int count = 2;
@@ -72,7 +72,7 @@ public class BruteCollinearPoints {
                                 Double h = new Double(tail.slopeTo(alreadyChosenTail[z]));
 
                                 // doesn't insert a segment with the same slope of other - very restrective 
-                                if (x.compareTo(y) == 0 || w.compareTo(h) == 0) {
+                                if (x.compareTo(w) == 0) {
                                     insert = false;
                                     break;
 

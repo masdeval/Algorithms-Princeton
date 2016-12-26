@@ -8,20 +8,19 @@ import java.util.Comparator;
 public class Solver {
         
     private edu.princeton.cs.algs4.Stack<Board> solution = new edu.princeton.cs.algs4.Stack<Board>();
-    private int moves = 0;
-        
+            
     public Solver(Board initial){           // find a solution to the initial board (using the A* algorithm)
     
         if (initial == null)
             throw new java.lang.NullPointerException();
         
-        MinPQ<Board> minPq = new MinPQ<Board>(new Comparator<Board>(){
+        MinPQ<SearchNode> minPq = new MinPQ<SearchNode>(new Comparator<SearchNode>(){
             
-            public int compare(Board a, Board b)
+            public int compare(SearchNode a, SearchNode b)
             {
-                if (a.manhattan()> b.manhattan())
+                if (a.node.manhattan()+a.moves > b.node.manhattan()+b.moves)
                     return 1;
-                else if(a.manhattan()< b.manhattan())
+                else if (a.node.manhattan()+b.moves < b.node.manhattan()+b.moves)
                     return -1;
                     
                 return 0;
@@ -29,28 +28,31 @@ public class Solver {
             
         });
         
-        minPq.insert(initial);        
+        minPq.insert(new SearchNode(initial));        
         
         while(!minPq.isEmpty()){
             
-            Board b = minPq.delMin();
-            if(b.isGoal()){
-                solution.push(b);
-                moves = b.getMoves();
-                while(b.getPrevious() != null)
+            SearchNode b = minPq.delMin();
+            if(b.node.isGoal()){
+                
+                solution.push(b.node);                
+                while(b.previous != null)
                 {
-                    solution.push(b.getPrevious());
-                    
-                    b = b.getPrevious();
+                    solution.push(b.previous.node);                    
+                    b = b.previous;
                 }
                 return;
             }
             
-            for(Board board : b.neighbors()){
+            for(Board board : b.node.neighbors()){
                 
                 // avoid insert duplicate board
-                if(!board.equals(b.getPrevious())){
-                    minPq.insert(board);                    
+                if(b.previous == null || !board.equals(b.previous.node)){
+                    SearchNode sn = new SearchNode(board);
+                    sn.previous = b;
+                    sn.moves = b.moves+1;
+                    minPq.insert(sn); 
+                    
                 }
             }
             
@@ -66,7 +68,7 @@ public class Solver {
     }
     public int moves() {                    // min number of moves to solve initial board; -1 if unsolvable
         
-        return this.moves;
+        return this.solution.size()-1;
         
     }
     
@@ -78,10 +80,11 @@ public class Solver {
     public static void main(String[] args) {
 
     // create initial board from file
-    //In in = new In(args[0]);
-    In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/8puzzle/puzzle36.txt");
+    In in = new In(args[0]);
+    // In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/8puzzle/puzzle36.txt");
+    // In in = new In("/home/christian/NetBeansProjects/Algorithms-Princeton/src/8puzzle/puzzle04.txt");
     int n = in.readInt();
-    byte[][] blocks = new byte[n][n];
+    int[][] blocks = new int[n][n];
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
             blocks[i][j] = in.readByte();
@@ -99,4 +102,19 @@ public class Solver {
             StdOut.println(board);
     }
 }
+    
+    private class SearchNode{
+                        
+        private Board node;
+        private SearchNode previous;
+        private int moves;
+        
+        public SearchNode(Board b){
+            
+            node = b;
+            previous = null;
+            moves = 0;
+        }
+        
+    }
 }

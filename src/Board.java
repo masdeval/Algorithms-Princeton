@@ -3,35 +3,27 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private byte[][] board;
-    private Board previous;
+    private int[][] board;
+    
     private int moves;
     private int manhattan = -1;
     private int hamming = -1;
 
-    public Board(byte[][] blocks) {           // construct a board from an n-by-n array of blocks
+    public Board(int[][] blocks) {           // construct a board from an n-by-n array of blocks
 
         /* for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks.length; j++) {
-                blocks[i][j] = blocks.length*i+j+1;
-            }
-        }
+         for (int j = 0; j < blocks.length; j++) {
+         blocks[i][j] = blocks.length*i+j+1;
+         }
+         }
          */
-        board = blocks;
-        previous = null;
+        board = deepCopyIntMatrix(blocks);
+        
         moves = 0;
         hamming();
         manhattan();
     }
     // (where blocks[i][j] = block in row i, column j)
-
-    public Board getPrevious() {
-        return previous;
-    }
-
-    public int getMoves() {
-        return moves;
-    }
 
     public int dimension() {                // board dimension n
 
@@ -59,7 +51,7 @@ public class Board {
             hamming = count;
         }
 
-        return hamming + moves;
+        return hamming ;
     }
 
     public int manhattan() {             // sum of Manhattan distances between blocks and goal
@@ -94,7 +86,7 @@ public class Board {
             this.manhattan = count;
         }
 
-        return manhattan + moves;
+        return manhattan;
     }
 
     public boolean isGoal() {               // is this board the goal board?
@@ -102,7 +94,38 @@ public class Board {
         return this.hamming == 0;
 
     }
-    //public Board twin()                    // a board that is obtained by exchanging any pair of blocks
+
+    public Board twin() {              // a board that is obtained by exchanging any pair of blocks
+
+        int x=0, y=0, new_x=0, new_y=0;
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+
+                if (board[i][j] != 0) {
+                    x = i;
+                    y = j;
+                    break;
+                }
+
+            }
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+
+                if (board[i][j] != 0 && i != x && j != y) {
+                    new_x = i;
+                    new_y = j;
+                    break;
+                }
+
+            }
+        }
+        
+        return new Board(exchange(x, y, new_x, new_y));
+
+    }
 
     public boolean equals(Object y) {       // does this board equal y?
 
@@ -159,8 +182,7 @@ public class Board {
         new_x = x - 1;
         new_y = y;
         if (new_x >= 0) {
-            Board b = new Board(exchange(x, y, new_x, new_y));
-            b.previous = this;
+            Board b = new Board(exchange(x, y, new_x, new_y));            
             b.moves = this.moves + 1;
             list.add(b);
         }
@@ -169,7 +191,6 @@ public class Board {
         new_y = y;
         if (new_x < board.length) {
             Board b = new Board(exchange(x, y, new_x, new_y));
-            b.previous = this;
             b.moves = this.moves + 1;
             list.add(b);
         }
@@ -178,7 +199,6 @@ public class Board {
         new_y = y - 1;
         if (new_y >= 0) {
             Board b = new Board(exchange(x, y, new_x, new_y));
-            b.previous = this;
             b.moves = this.moves + 1;
             list.add(b);
         }
@@ -187,7 +207,6 @@ public class Board {
         new_y = y + 1;
         if (new_y < board.length) {
             Board b = new Board(exchange(x, y, new_x, new_y));
-            b.previous = this;
             b.moves = this.moves + 1;
             list.add(b);
         }
@@ -212,21 +231,21 @@ public class Board {
     }
 
     // public static void main(String[] args) // unit tests (not graded)
-    private byte[][] exchange(int x, int y, int new_x, int new_y) {
+    private int[][] exchange(int x, int y, int new_x, int new_y) {
 
-        byte[][] newBoard = deepCopyIntMatrix(board);
-        byte temp = board[new_x][new_y];
+        int[][] newBoard = deepCopyIntMatrix(board);
+        int temp = board[new_x][new_y];
         newBoard[x][y] = temp;
-        newBoard[new_x][new_y] = 0;
+        newBoard[new_x][new_y] = board[x][y];
         return newBoard;
 
     }
 
-    private byte[][] deepCopyIntMatrix(byte[][] input) {
+    private int[][] deepCopyIntMatrix(int[][] input) {
         if (input == null) {
             return null;
         }
-        byte[][] result = new byte[input.length][];
+        int[][] result = new int[input.length][];
         for (int r = 0; r < input.length; r++) {
             result[r] = input[r].clone();
         }

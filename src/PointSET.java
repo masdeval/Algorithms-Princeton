@@ -47,15 +47,15 @@ public class PointSET {
 
     public Iterable<Point2D> range(RectHV rect) {            // all points that are inside the rectangle 
 
-        ArrayList<Point2D> points = new ArrayList<Point2D>();
+        ArrayList<Point2D> list = new ArrayList<Point2D>();
 
-        for (Point2D p : points) {
+        for (Point2D p : this.points) {
             if (rect.contains(p)) {
-                points.add(p);
+                list.add(p);
             }
         }
 
-        return points;
+        return list;
     }
 
     public Point2D nearest(Point2D p) {            // a nearest neighbor in the set to point p; null if the set is empty 
@@ -64,9 +64,11 @@ public class PointSET {
             return null;
         
         Point2D[] a = new Point2D[1];
-        Arrays.sort(points.toArray(a), p.distanceToOrder());
+        Point2D[] aux = points.toArray(a);
+        Arrays.sort(aux, p.distanceToOrder());
         
-        return points.first();
+        Point2D result = aux[0];
+        return result;
 
     }
     

@@ -26,14 +26,15 @@ public class NearestNeighborVisualizer {
 
         // initialize the two data structures with point from standard input
         PointSET brute = new PointSET();
-        //KdTree kdtree = new KdTree();
+        KdTree kdtree = new KdTree();
         while (!in.isEmpty()) {
             double x = in.readDouble();
             double y = in.readDouble();
             Point2D p = new Point2D(x, y);
-            //kdtree.insert(p);
+            kdtree.insert(p);
             brute.insert(p);
         }
+        
 
         while (true) {
 
@@ -47,16 +48,17 @@ public class NearestNeighborVisualizer {
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.setPenRadius(0.01);
             brute.draw();
-
+            //kdtree.draw();
+            
             // draw in red the nearest neighbor (using brute-force algorithm)
             StdDraw.setPenRadius(0.03);
-            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.setPenColor(StdDraw.RED);            
             brute.nearest(query).draw();
             StdDraw.setPenRadius(0.02);
 
             // draw in blue the nearest neighbor (using kd-tree algorithm)
             StdDraw.setPenColor(StdDraw.BLUE);
-            //kdtree.nearest(query).draw();
+            kdtree.nearest(query).draw();
             StdDraw.show();
             StdDraw.pause(40);
         }

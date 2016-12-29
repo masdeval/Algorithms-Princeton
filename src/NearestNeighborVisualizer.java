@@ -20,7 +20,7 @@ public class NearestNeighborVisualizer {
     public static void main(String[] args) {
         //String filename = args[0];
         //In in = new In(filename);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/circle10.txt");
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle100.txt");
         
         StdDraw.enableDoubleBuffering();
 
@@ -35,7 +35,7 @@ public class NearestNeighborVisualizer {
             brute.insert(p);
         }
         
-
+               
         while (true) {
 
             // the location (x, y) of the mouse
@@ -53,11 +53,15 @@ public class NearestNeighborVisualizer {
             // draw in red the nearest neighbor (using brute-force algorithm)
             StdDraw.setPenRadius(0.03);
             StdDraw.setPenColor(StdDraw.RED);            
+            Point2D brutePoint = brute.nearest(query);
             brute.nearest(query).draw();
             StdDraw.setPenRadius(0.02);
 
             // draw in blue the nearest neighbor (using kd-tree algorithm)
             StdDraw.setPenColor(StdDraw.BLUE);
+            Point2D kdPoint = kdtree.nearest(query);
+            if(!kdPoint.equals(brutePoint))
+                kdtree.nearest(query);
             kdtree.nearest(query).draw();
             StdDraw.show();
             StdDraw.pause(40);

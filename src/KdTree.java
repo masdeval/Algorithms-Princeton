@@ -1,4 +1,5 @@
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
@@ -14,7 +15,7 @@ public class KdTree {
     public KdTree() {                              // construct an empty set of points 
 
         root = null;
-
+        size = 0;
     }
 
     public boolean isEmpty() {                      // is the set empty? 
@@ -30,26 +31,31 @@ public class KdTree {
 
     public void insert(Point2D p) {             // add the point to the set (if it is not already in the set)
 
-        Node aux = new Node();
-        aux.p = p;
+        Node aux = new Node(p);
 
         if (root == null) {
             aux.vertical = true;
             root = aux;
+            size++;
         } else {
             insert(root, aux);
         }
 
-        size++;
     }
 
     private void insert(Node father, Node chield) {
+
+        if (father.p.equals(chield.p)) {
+            return;
+        }
+
         if (father.comparator().compare(father, chield) > 0) {
             if (father.lb != null) {
                 insert(father.lb, chield);
             } else {
                 chield.vertical = !father.vertical;
                 father.lb = chield;
+                size++;
             }
         } else if (father.comparator().compare(father, chield) < 0) {
             if (father.rt != null) {
@@ -57,6 +63,7 @@ public class KdTree {
             } else {
                 chield.vertical = !father.vertical;
                 father.rt = chield;
+                size++;
             }
 
         } else if (father.rt != null) {
@@ -64,16 +71,16 @@ public class KdTree {
         } else {
             chield.vertical = !father.vertical;
             father.rt = chield;
+            size++;
         }
 
     }
 
     public boolean contains(Point2D p) {            // does the set contain point p? 
 
-        ArrayList<Point2D> list = new ArrayList<Point2D>();
-        this.breadthFirstTraversal(root, list);
-        
-        return list.contains(p);
+        Node aux = new Node(p);
+        return (this.search(root, aux) != null);
+
     }
 
     public void draw() {                         // draw all points to standard draw 
@@ -92,18 +99,30 @@ public class KdTree {
         this.breadthFirstTraversal(root);
     }
 
-    
-    private void breadthFirstTraversal(Node n, List<Point2D> list){
-        
-        if (n == null)
-            return;
-        
-        list.add(n.p);
-        breadthFirstTraversal(n.lb, list);
-        breadthFirstTraversal(n.rt, list);
-        
+    private Point2D search(Node father, Node n) {
+
+        while (true) {
+
+            if (father == null) {
+                return null;
+            }
+
+            if (father.p.equals(n.p)) {
+                return father.p;
+            }
+
+            if (father.comparator().compare(father, n) > 0) {
+                father = father.lb;
+            } else if (father.comparator().compare(father, n) < 0) {
+                father = father.rt;
+            } else {
+                father = father.rt;
+            }
+
+        }
+
     }
-    
+
     private void breadthFirstTraversal(Node n) {
 
         if (n == null) {
@@ -161,81 +180,301 @@ public class KdTree {
 
     }
 
-   /* public Iterable<Point2D> range(RectHV rect) {            // all points that are inside the rectangle 
+    public Iterable<Point2D> range(RectHV rect) {            // all points that are inside the rectangle 
 
-    }*/
+        ArrayList<Point2D> list = new ArrayList<Point2D>();
+        range(root, rect, list);
+
+        return list;
+    }
+
+    private void range(Node n, RectHV query, List<Point2D> list) {
+
+        if (query.contains(n.p)) {
+            list.add(n.p);
+        }
+
+        if (n.getRect().intersects(query)) {
+            // search both sides    
+            if (n.lb != null) {
+                range(n.lb, query, list);
+            }
+            if (n.rt != null) {
+                range(n.rt, query, list);
+            }
+        } else // go to the side where the rect is        
+        // go to the left
+         if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) < query.distanceTo(n.rt.p)) {
+                range(n.lb, query, list);
+            } //  go to the right
+            else if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) > query.distanceTo(n.rt.p)) {
+                range(n.rt, query, list);
+
+            } else if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) == query.distanceTo(n.rt.p)) {
+                range(n.rt, query, list);
+                range(n.lb, query, list);
+
+            } else if (n.lb == null && n.rt != null) //  go to the right
+            {
+                range(n.rt, query, list);
+
+            } else if (n.lb != null && n.rt == null) // go to the left                
+            {
+                range(n.lb, query, list);
+            }
+    }
 
     public Point2D nearest(Point2D p) {            // a nearest neighbor in the set to point p; null if the set is empty 
 
-              
-       return nearest(root, p, root.p); 
-        
+        Node n = new Node(p);
+        return nearest(root, n, root.p);
+
     }
-    
-    private Point2D nearest(Node n, Point2D query, Point2D nearest){
+
+    /*
+    private Point2D nearest(Node n, Point2D query, Point2D nearest) {
 
         // go to the left
-       if (n.lb != null && n.rt != null && n.lb.p.distanceTo(query) < n.rt.p.distanceTo(query))
-       {
-           if (n.lb.p.distanceTo(query) < nearest.distanceTo(query))
-           {
-               nearest = nearest(n.lb,query,n.lb.p);
-           }
-           else{
-               nearest = nearest(n.lb,query,nearest);
-           }
-           
-       } //  go to the right
-       else if (n.lb != null && n.rt != null && n.lb.p.distanceTo(query) > n.rt.p.distanceTo(query))
-       {
-           if (n.rt.p.distanceTo(query) < nearest.distanceTo(query))
-           {
-               nearest = nearest(n.rt,query,n.rt.p);
-           }
-           else{
-               nearest = nearest(n.rt,query,nearest);
-           }          
-           
-       }      
-       else if (n.lb == null && n.rt != null) //  go to the right
-       {
-           if (n.rt.p.distanceTo(query) < nearest.distanceTo(query))
-           {
-               nearest = nearest(n.rt,query,n.rt.p);
-           }
-           else{
-               nearest = nearest(n.rt,query,nearest);
-           }                                
-       }
-       else if (n.lb != null && n.rt == null)  // go to the left
-       {
-           
-           if (n.lb.p.distanceTo(query) < nearest.distanceTo(query))
-           {
-               nearest = nearest(n.lb,query,n.lb.p);
-           }
-           else{
-               nearest = nearest(n.lb,query,nearest);
-           }
+        if (n.lb != null && n.rt != null && n.lb.p.distanceSquaredTo(query) < n.rt.p.distanceSquaredTo(query)) {
+            if (n.lb.p.distanceSquaredTo(query) < nearest.distanceSquaredTo(query)) {
+                nearest = nearest(n.lb, query, n.lb.p);
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
 
-       }
-       
+        } //  go to the right
+        else if (n.lb != null && n.rt != null && n.lb.p.distanceSquaredTo(query) > n.rt.p.distanceSquaredTo(query)) {
+            if (n.rt.p.distanceSquaredTo(query) < nearest.distanceSquaredTo(query)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+
+        }
+        else if (n.lb != null && n.rt != null && n.lb.p.distanceSquaredTo(query) == n.rt.p.distanceSquaredTo(query)) {
+            if (n.rt.p.distanceSquaredTo(query) < nearest.distanceSquaredTo(query)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } 
             
-       return nearest; 
+            if (n.lb.p.distanceSquaredTo(query) < nearest.distanceSquaredTo(query)) {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
+        }        
+        else if (n.lb == null && n.rt != null) //  go to the right
+        {
+            if (n.rt.p.distanceSquaredTo(query) < nearest.distanceSquaredTo(query)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+        } else if (n.lb != null && n.rt == null) // go to the left
+        {
+
+            if (n.lb.p.distanceSquaredTo(query) < nearest.distanceSquaredTo(query)) {
+                nearest = nearest(n.lb, query, n.lb.p);
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
+        }
+
+        return nearest;
+    }*/
+    private Point2D nearest(Node n, Node query, Point2D nearest) {
+
+        if (n.lb != null && n.rt != null) {
+
+            if (n.vertical) { 
+                
+                // go to the left  first                     
+                if (query.p.x()  < n.p.x()) // query point is in the left side of vertical line
+                {
+                    //if(n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) 
+                    {
+                        if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.lb, query, n.lb.p);
+                        } else {
+                            nearest = nearest(n.lb, query, nearest);
+                        }                    
+                    }
+                    
+                    if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p))
+                    { 
+                        if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.rt, query, n.rt.p);
+                        } 
+                        else {
+                            nearest = nearest(n.rt, query, nearest);
+                        }
+                    }
+                    
+                } 
+                //go to right first
+                if (query.p.x() > n.p.x()) // query point is in the right side of vertical line
+                {
+                    
+                    //if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p))
+                    { 
+                        if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.rt, query, n.rt.p);
+                        } 
+                        else {
+                            nearest = nearest(n.rt, query, nearest);
+                        }
+                    }
+                    
+                    if(n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) 
+                    {
+                        if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.lb, query, n.lb.p);
+                        } else {
+                            nearest = nearest(n.lb, query, nearest);
+                        }                    
+                    }
+                    
+               }
+              // horizontal  
+            } else  { // horizontal
+
+                if (query.p.y()  < n.p.y()){ // query point is bellow horizontal line 
+                
+                   // if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p))
+                    {
+                        
+                        if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.lb, query, n.lb.p);
+                        } else {
+                         nearest = nearest(n.lb, query, nearest);
+                        }
+                    }
+                    
+                    if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p))
+                    {                         
+                        if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.rt, query, n.rt.p);
+                        } else {
+                            nearest = nearest(n.rt, query, nearest);
+                        }
+                    }
+                    
+                    
+                }
+                
+                if (query.p.y()  > n.p.y()){ // query point is above horizontal line 
+                    
+                    //if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p))
+                    {                         
+                        if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.rt, query, n.rt.p);
+                        } else {
+                            nearest = nearest(n.rt, query, nearest);
+                        }
+                    }
+                    
+                    if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p))
+                    {
+                        
+                        if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                            nearest = nearest(n.lb, query, n.lb.p);
+                        } else {
+                         nearest = nearest(n.lb, query, nearest);
+                        }
+                    }
+                    
+                }
+            }
+
+        } else if (n.rt != null) {
+
+            if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+
+        } else if (n.lb != null) {
+
+            if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                nearest = nearest(n.lb, query, n.lb.p);
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
+        }
+        
+        /*     if (n.lb != null && n.rt != null && n.comparator().compare(n,query) > 0) {
+            if (n.lb.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
+                nearest = nearest(n.lb, query, n.lb.p);
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
+        } //  go to the right
+        else if (n.lb != null && n.rt != null && n.comparator().compare(n,query) < 0) {
+            if (n.rt.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+        }
+        else if (n.lb != null && n.rt != null && n.comparator().compare(n,query) == 0) {
+            
+            if (n.rt.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }            
+        }        
+        else if (n.lb == null && n.rt != null) //  go to the right
+        {
+            if (n.rt.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt.p);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+        } else if (n.lb != null && n.rt == null) // go to the left
+        {
+
+            if (n.lb.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
+                nearest = nearest(n.lb, query, n.lb.p);
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
+        }*/
+        return nearest;
     }
 
     private static class Node {
 
         private Point2D p;      // the point
-        private RectHV rect;    // the axis-aligned rectangle corresponding to this node
+        // private RectHV rect;    // the axis-aligned rectangle corresponding to this node
         private Node lb;        // the left/bottom subtree
         private Node rt;        // the right/top subtree
 
         private boolean vertical;
 
+        public Node(Point2D p) {
+
+            this.p = p;
+        }
+
         public Comparator<Node> comparator() {
 
             return new XYOrder();
+
+        }
+
+        public RectHV getRect() {
+
+            if (vertical) {
+
+                return new RectHV(p.x(), 0, p.x(), 1);
+
+            } else {
+                return new RectHV(0, p.y(), 1, p.y());
+            }
 
         }
 
@@ -259,5 +498,31 @@ public class KdTree {
 
     }
 
-    // public static void main(String[] args)                  // unit testing of the methods (optional) 
+    public static void main(String[] args) // unit testing of the methods (optional) 
+    {
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/circle10.txt");
+
+        StdDraw.enableDoubleBuffering();
+
+        // initialize the two data structures with point from standard input
+        PointSET brute = new PointSET();
+        KdTree kdtree = new KdTree();
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            kdtree.insert(p);
+            //brute.insert(p);
+        }
+
+        boolean aux = kdtree.contains(new Point2D(0.510000, 0.000000));
+        Point2D p = new Point2D(0.5, 0.5);
+        Node n = new Node(p);
+        n.vertical = true;
+        StdDraw.clear();
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.01);
+        n.getRect().draw();
+        StdDraw.show();
+    }
 }

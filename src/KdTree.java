@@ -31,27 +31,31 @@ public class KdTree {
 
     public void insert(Point2D p) {             // add the point to the set (if it is not already in the set)
 
-        Node aux = new Node(p);
+        
 
         if (root == null) {
+            Node aux = new Node(p,null);
             aux.vertical = true;
             root = aux;
             size++;
+            
         } else {
-            insert(root, aux);
+            Node aux = new Node(p,root);
+            insert(root, p);
         }
 
     }
 
-    private void insert(Node father, Node chield) {
+    private void insert(Node father, Point2D p) {
 
-        if (father.p.equals(chield.p)) {
+        if (father.p.equals(p)) {
             return;
         }
 
+        Node chield = new Node(p,father);
         if (father.comparator().compare(father, chield) > 0) {
             if (father.lb != null) {
-                insert(father.lb, chield);
+                insert(father.lb, p);
             } else {
                 chield.vertical = !father.vertical;
                 father.lb = chield;
@@ -59,7 +63,7 @@ public class KdTree {
             }
         } else if (father.comparator().compare(father, chield) < 0) {
             if (father.rt != null) {
-                insert(father.rt, chield);
+                insert(father.rt, p);
             } else {
                 chield.vertical = !father.vertical;
                 father.rt = chield;
@@ -67,7 +71,7 @@ public class KdTree {
             }
 
         } else if (father.rt != null) {
-            insert(father.rt, chield);
+            insert(father.rt, p);
         } else {
             chield.vertical = !father.vertical;
             father.rt = chield;
@@ -205,13 +209,14 @@ public class KdTree {
         } else // go to the side where the rect is        
         // go to the left
         {
-            if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) < query.distanceTo(n.rt.p)) {
+            //if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) < query.distanceTo(n.rt.p)) {
+            if (n.lb != null && n.rt != null && n.comparator().compare(n, new Node(new Point2D(query.xmax(),query.ymax()))) > 0  ) {
                 range(n.lb, query, list);
             } //  go to the right
-            else if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) > query.distanceTo(n.rt.p)) {
+            else if (n.lb != null && n.rt != null && n.comparator().compare(n, new Node(new Point2D(query.xmax(),query.ymax()))) < 0 ) {
                 range(n.rt, query, list);
 
-            } else if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) == query.distanceTo(n.rt.p)) {
+            } else if (n.lb != null && n.rt != null && n.comparator().compare(n, new Node(new Point2D(query.xmax(),query.ymax()))) == 0 ) {
                 range(n.rt, query, list);
                 range(n.lb, query, list);
 
@@ -229,7 +234,7 @@ public class KdTree {
     public Point2D nearest(Point2D p) {            // a nearest neighbor in the set to point p; null if the set is empty 
 
         Node n = new Node(p);
-        return nearest(root, n, root.p);
+        return nearest(root, n, root).p;
 
     }
 
@@ -283,14 +288,14 @@ public class KdTree {
 
         return nearest;
     }*/
-    private Point2D nearest(Node n, Node query, Point2D nearest) {
+    private Node nearest(Node n, Node query, Node nearest) {
 
-        if (n.lb != null && n.rt != null) {
+  /*      if (n.lb != null && n.rt != null) {
 
             if (n.vertical) { 
                 
                 // go to the left  first                     
-                if (query.p.x()  < n.p.x()) // query point is in the left side of vertical line
+                if (query.p.x()  < n.p.x()) // query point is in the left side of vertical line                
                 {
                     //if(n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) 
                     {
@@ -313,7 +318,7 @@ public class KdTree {
                     
                 } 
                 //go to right first
-                if (query.p.x() > n.p.x()) // query point is in the right side of vertical line
+                if (query.p.x() >= n.p.x()) // query point is in the right side of vertical line
                 {
                     
                     //if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p))
@@ -363,7 +368,7 @@ public class KdTree {
                     
                 }
                 
-                if (query.p.y()  > n.p.y()){ // query point is above horizontal line 
+                if (query.p.y()  >= n.p.y()){ // query point is above horizontal line 
                     
                     //if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p))
                     {                         
@@ -403,32 +408,116 @@ public class KdTree {
                 nearest = nearest(n.lb, query, nearest);
             }
 
+        }*/
+  
+       // NOT working 
+          // go to left first  
+          if (n.lb != null && n.rt != null && n.comparator().compare(n, query) > 0) {           
+            
+            boolean changeNearest = false;
+            if (n.lb.p.distanceSquaredTo(query.p) < nearest.getRect().distanceSquaredTo(query.p)) {
+                nearest = nearest(n.lb, query, n.lb);
+                changeNearest = true;
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
+            if (!changeNearest) {
+                if (n.rt.p.distanceTo(query.p) < nearest.getRect().distanceTo(query.p)) {
+                    nearest = nearest(n.rt, query, n.rt);
+                } else {
+                    nearest = nearest(n.rt, query, nearest);
+                }
+            }
+
+        } //  go to the right first
+        else if (n.lb != null && n.rt != null && n.comparator().compare(n, query) < 0) {
+            
+            boolean changeNearest = false;
+            if (n.rt.p.distanceSquaredTo(query.p) < nearest.getRect().distanceSquaredTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt);
+                changeNearest = true;
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+
+            if (!changeNearest) {
+
+                if (n.lb.p.distanceTo(query.p) < nearest.getRect().distanceTo(query.p)) {
+                    nearest = nearest(n.lb, query, n.lb);
+                } else {
+                    nearest = nearest(n.lb, query, nearest);
+                }
+            }
+
+        } else if (n.lb != null && n.rt != null && n.comparator().compare(n, query) == 0) {
+
+            if (n.rt.p.distanceSquaredTo(query.p) < nearest.getRect().distanceSquaredTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+        } else if (n.lb == null && n.rt != null) //  go to the right
+        {
+            if (n.rt.p.distanceSquaredTo(query.p) < nearest.getRect().distanceSquaredTo(query.p)) {
+                nearest = nearest(n.rt, query, n.rt);
+            } else {
+                nearest = nearest(n.rt, query, nearest);
+            }
+        } else if (n.lb != null && n.rt == null) // go to the left
+        {
+
+            if (n.lb.p.distanceSquaredTo(query.p) < nearest.getRect().distanceSquaredTo(query.p)) {
+                nearest = nearest(n.lb, query, n.lb);
+            } else {
+                nearest = nearest(n.lb, query, nearest);
+            }
+
         }
         
-        /*     if (n.lb != null && n.rt != null && n.comparator().compare(n,query) > 0) {
-            if (n.lb.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
+  
+      /*
+        if (n.lb != null && n.rt != null && n.comparator().compare(n, query) > 0) {
+            
+            if (n.lb.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {            
                 nearest = nearest(n.lb, query, n.lb.p);
             } else {
                 nearest = nearest(n.lb, query, nearest);
             }
 
+            if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                if (n.rt.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                    nearest = nearest(n.rt, query, n.rt.p);
+                } else {
+                    nearest = nearest(n.rt, query, nearest);
+                }
+            }
+
         } //  go to the right
-        else if (n.lb != null && n.rt != null && n.comparator().compare(n,query) < 0) {
+        else if (n.lb != null && n.rt != null && n.comparator().compare(n, query) < 0) {
             if (n.rt.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
                 nearest = nearest(n.rt, query, n.rt.p);
             } else {
                 nearest = nearest(n.rt, query, nearest);
             }
-        }
-        else if (n.lb != null && n.rt != null && n.comparator().compare(n,query) == 0) {
-            
+
+            if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+
+                if (n.lb.p.distanceTo(query.p) < nearest.distanceTo(query.p)) {
+                    nearest = nearest(n.lb, query, n.lb.p);
+                } else {
+                    nearest = nearest(n.lb, query, nearest);
+                }
+            }
+
+        } else if (n.lb != null && n.rt != null && n.comparator().compare(n, query) == 0) {
+
             if (n.rt.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
                 nearest = nearest(n.rt, query, n.rt.p);
             } else {
                 nearest = nearest(n.rt, query, nearest);
-            }            
-        }        
-        else if (n.lb == null && n.rt != null) //  go to the right
+            }
+        } else if (n.lb == null && n.rt != null) //  go to the right
         {
             if (n.rt.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {
                 nearest = nearest(n.rt, query, n.rt.p);
@@ -451,15 +540,23 @@ public class KdTree {
     private static class Node {
 
         private Point2D p;      // the point
+        private Node father;
         // private RectHV rect;    // the axis-aligned rectangle corresponding to this node
         private Node lb;        // the left/bottom subtree
         private Node rt;        // the right/top subtree
 
         private boolean vertical;
 
-        public Node(Point2D p) {
+        public Node(Point2D p, Node father) {
 
+            this.father = father;
             this.p = p;
+        }
+        
+        public Node (Point2D p){
+            
+            this.p = p;
+            this.father = null;
         }
 
         public Comparator<Node> comparator() {
@@ -468,7 +565,7 @@ public class KdTree {
 
         }
 
-        public RectHV getRect() {
+      /*  public RectHV getRect() {                      
 
             if (vertical) {
 
@@ -478,8 +575,50 @@ public class KdTree {
                 return new RectHV(0, p.y(), 1, p.y());
             }
 
+        }*/
+
+        public RectHV getRect() { 
+            
+            if (father == null) {
+                if (vertical) {
+                    return new RectHV(p.x(), 0, p.x(), 1);
+
+                } else {
+                    return new RectHV(0, p.y(), 1, p.y());
+                }
+            }
+
+            if (vertical) {
+
+                if (father.comparator().compare(father, this) > 0){ // bellow chield
+                    
+                    return new RectHV(this.p.x(), 0, this.p.x(), father.p.y());
+                    
+                }
+                else // above chield
+                {
+                     return new RectHV(this.p.x(), father.p.y(), this.p.x(), 1);
+                }
+
+            } else { // horizontal
+                
+                if (father.comparator().compare(father, this) > 0){ // feft chield
+                    
+                    return new RectHV(0, this.p.y(), father.p.x(), this.p.y());
+                    
+                }
+                else // right chield
+                {
+                     return new RectHV(father.p.x(), this.p.y(), 1, this.p.y());
+                }
+                
+                
+            }
+
         }
 
+
+        
         // compare points according to their x-coordinate or y-coordinate
         private class XYOrder implements Comparator<Node> {
 

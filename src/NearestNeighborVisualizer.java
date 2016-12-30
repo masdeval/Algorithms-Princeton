@@ -20,7 +20,7 @@ public class NearestNeighborVisualizer {
     public static void main(String[] args) {
         //String filename = args[0];
         //In in = new In(filename);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle100.txt");
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle10.txt");
         
         StdDraw.enableDoubleBuffering();
 

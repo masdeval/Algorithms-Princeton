@@ -204,7 +204,8 @@ public class KdTree {
             }
         } else // go to the side where the rect is        
         // go to the left
-         if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) < query.distanceTo(n.rt.p)) {
+        {
+            if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) < query.distanceTo(n.rt.p)) {
                 range(n.lb, query, list);
             } //  go to the right
             else if (n.lb != null && n.rt != null && query.distanceTo(n.lb.p) > query.distanceTo(n.rt.p)) {
@@ -222,6 +223,7 @@ public class KdTree {
             {
                 range(n.lb, query, list);
             }
+        }
     }
 
     public Point2D nearest(Point2D p) {            // a nearest neighbor in the set to point p; null if the set is empty 
@@ -524,5 +526,5 @@ public class KdTree {
         StdDraw.setPenRadius(0.01);
         n.getRect().draw();
         StdDraw.show();
-    }
+    } 
 }

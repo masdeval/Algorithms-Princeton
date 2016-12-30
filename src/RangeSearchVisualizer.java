@@ -23,7 +23,7 @@ public class RangeSearchVisualizer {
 
         //String filename = args[0];
         //In in = new In(filename);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/circle10.txt");
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle100.txt");
 
         StdDraw.enableDoubleBuffering();
 

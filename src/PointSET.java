@@ -4,6 +4,7 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.TreeSet;
 
 public class PointSET {
@@ -72,7 +73,6 @@ public class PointSET {
 
     }
     
-
     
     // public static void main(String[] args)                  // unit testing of the methods (optional) 
 }

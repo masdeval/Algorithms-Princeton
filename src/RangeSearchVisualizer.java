@@ -23,18 +23,18 @@ public class RangeSearchVisualizer {
 
         //String filename = args[0];
         //In in = new In(filename);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/circle10.txt");
+        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle100.txt");
 
         StdDraw.enableDoubleBuffering();
 
         // initialize the data structures with N points from standard input
         PointSET brute = new PointSET();
-        //KdTree kdtree = new KdTree();
+        KdTree kdtree = new KdTree();
         while (!in.isEmpty()) {
             double x = in.readDouble();
             double y = in.readDouble();
             Point2D p = new Point2D(x, y);
-           // kdtree.insert(p);
+            kdtree.insert(p);
             brute.insert(p);
         }
 
@@ -94,8 +94,8 @@ public class RangeSearchVisualizer {
             // draw the range search results for kd-tree in blue
             StdDraw.setPenRadius(.02);
             StdDraw.setPenColor(StdDraw.BLUE);
-           // for (Point2D p : kdtree.range(rect))
-           //     p.draw();
+            for (Point2D p : kdtree.range(rect))
+                p.draw();
 
             StdDraw.show();
             StdDraw.pause(40);

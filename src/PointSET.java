@@ -63,12 +63,23 @@ public class PointSET {
         if (points == null)
             return null;
         
-        Point2D[] a = new Point2D[1];
-        Point2D[] aux = points.toArray(a);
-        Arrays.sort(aux, p.distanceToOrder());
+        Point2D nearest = null;
         
-        Point2D result = aux[0];
-        return result;
+        for (Point2D x : points){
+            
+            if (nearest == null){
+                nearest = x;
+            }
+            else{
+                
+                if (x.distanceSquaredTo(p) < nearest.distanceSquaredTo(p))
+                    nearest = x;
+            }
+            
+            
+        }
+        
+        return nearest;
 
     }
     

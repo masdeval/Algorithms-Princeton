@@ -185,7 +185,10 @@ public class KdTree {
     }
 
     public Iterable<Point2D> range(RectHV rect) {            // all points that are inside the rectangle 
-
+        
+        if (root == null)
+            return null; 
+        
         ArrayList<Point2D> list = new ArrayList<Point2D>();
         range(root, rect, list);
 
@@ -234,7 +237,7 @@ public class KdTree {
     public Point2D nearest(Point2D p) {            // a nearest neighbor in the set to point p; null if the set is empty 
 
         Node n = new Node(p);
-        return nearest(root, n, root).p;
+        return nearest(root, n, root.p);
 
     }
 
@@ -288,7 +291,7 @@ public class KdTree {
 
         return nearest;
     }*/
-    private Node nearest(Node n, Node query, Node nearest) {
+    private Point2D nearest(Node n, Node query, Point2D nearest) {
 
   /*      if (n.lb != null && n.rt != null) {
 
@@ -410,6 +413,7 @@ public class KdTree {
 
         }*/
   
+        /*
        // NOT working 
           // go to left first  
           if (n.lb != null && n.rt != null && n.comparator().compare(n, query) > 0) {           
@@ -474,9 +478,9 @@ public class KdTree {
             }
 
         }
-        
+        */
   
-      /*
+      
         if (n.lb != null && n.rt != null && n.comparator().compare(n, query) > 0) {
             
             if (n.lb.p.distanceSquaredTo(query.p) < nearest.distanceSquaredTo(query.p)) {            
@@ -533,7 +537,7 @@ public class KdTree {
                 nearest = nearest(n.lb, query, nearest);
             }
 
-        }*/
+        }
         return nearest;
     }
 
@@ -579,7 +583,8 @@ public class KdTree {
 
         public RectHV getRect() { 
             
-            if (father == null) {
+            //if (father == null) 
+            {
                 if (vertical) {
                     return new RectHV(p.x(), 0, p.x(), 1);
 
@@ -587,7 +592,7 @@ public class KdTree {
                     return new RectHV(0, p.y(), 1, p.y());
                 }
             }
-
+/*
             if (vertical) {
 
                 if (father.comparator().compare(father, this) > 0){ // bellow chield
@@ -613,7 +618,7 @@ public class KdTree {
                 }
                 
                 
-            }
+            }  */
 
         }
 

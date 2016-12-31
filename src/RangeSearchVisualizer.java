@@ -23,8 +23,9 @@ public class RangeSearchVisualizer {
 
         //String filename = args[0];
         //In in = new In(filename);
-        In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle100.txt");
-
+        //In in = new In("/home/christian/ProjetosNetBeans/Algorithms Princeton/src/kdtree/circle100.txt");
+        In in = new In("/home/christian/NetBeansProjects/Algorithms-Princeton/src/circle10.txt");
+        
         StdDraw.enableDoubleBuffering();
 
         // initialize the data structures with N points from standard input

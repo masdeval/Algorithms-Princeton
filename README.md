@@ -11,7 +11,7 @@ The path in those files always point to `/home/ubuntu/coursera`
 Find the code inside the **src** folder:
 
 - [Percolation](https://coursera.cs.princeton.edu/algs4/assignments/percolation/specification.php):
-  - [PercolationClient](PercolationClient.java)
+  - [PercolationClient](src/PercolationClient.java)
   - [PercolationStats](PercolationStats.java)
   - [Percolation](Percolation.java)
 - [Collinear Points](https://coursera.cs.princeton.edu/algs4/assignments/collinear/specification.php)

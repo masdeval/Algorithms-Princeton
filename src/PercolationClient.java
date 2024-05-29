@@ -25,7 +25,7 @@ public class PercolationClient {
         // TODO code application logic here
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File("/home/christian/coursera/Algorithms_Part_I_Princeton/Programming Assigment 1/percolation/input2.txt")), 1);
+            BufferedReader br = new BufferedReader(new FileReader(new File("/home/ubuntu/coursera/percolation/input2.txt")), 1);
             Percolation percolation;
 
             String line = br.readLine();

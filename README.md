@@ -42,7 +42,7 @@ Find the code inside the **src** folder:
   - There are three commented solutions in the code:
     - Using dynamic programming
     - Counting (my implementation)
-    - An attempt to use matrix power by linear algebra, which would lead to o O(1) solution. This attempt is partially wrong. I should have used the matrix of eigenvectors, but instead I factorized using SVD.     
+    - An attempt to use matrix power by linear algebra, which would lead to a O(1) solution. This attempt is partially wrong. I should have used the matrix of eigenvectors, but instead I factorized using SVD.     
 
 
 

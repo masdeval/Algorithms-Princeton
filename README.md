@@ -34,4 +34,16 @@ Find the code inside the **src** folder:
   - [RandomizedQueue](src/RandomizedQueue.java) 
   - [Deque](src/Deque.java)
 
+### Coding Challenges
+
+- [Stair Problem](src/Coding Challenges/Stair Problem/StairProblem.java) :
+  - Definition: A child is running up a staircase with n steps and can hop either 1 step, 2
+	steps, or 3 steps at a time. Implement a method to count how many possible ways the child can run up the stairs.
+  - There are three commented solutions in the code:
+    - Using dynamic programming
+    - Counting (my implementation)
+	  - An attempt to use matrix power by linear algebra, which would lead to o O(1) solution. This attempt is partially wrong. I should have used the matrix of eigenvectors, but instead I factorized using SVD.     
+
+
+
 In the folder **others** you can find other trick algorithms with discussion and explanation.

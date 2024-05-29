@@ -1,5 +1,6 @@
+package codingchallenges.stairproblem;
 
-import java.math.BigInteger;
+
 
 public class StairProblem {
 
